@@ -3,12 +3,14 @@ const cors = require('cors');
 const app = express();
 const PORT = 5000;
 const route = require("./routes/userRoutes");
+const adminRoute = require("./routes/adminRoutes");
 
 require('./dbConfig/dbConnect')
 
 app.use(cors());
 app.use(express.json());
 app.use("/api", route);
+app.use("/admin/api", adminRoute)
 
 
 

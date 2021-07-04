@@ -1,5 +1,6 @@
 const User = require("../models/User");
-const {validateRegistrationInputs, validateUserLoginInputs } = require("../utils/validator");
+const { validateRegistrationInputs, validateUserLoginInputs } = require("../utils/validator");
+const { generateToken, verifyToken } = require("../auth/Services");
 
 
 //register user
@@ -20,14 +21,13 @@ const registerUser = async (req, res) => {
 
       //check if the user exist in the data base
       let userExist = await User.findOne({ email });
-      if(userExist) return res.status(405).send("user with email already exist");
+      if(userExist) return  res.status(405).send("user with email already exist");
 
       const user = await User.create(newUser);
 
       res.status(201).send({user});
 
     }catch(err) {
-        const { details } = err;
         res.status(400).send(err);
     }
     
@@ -37,7 +37,7 @@ const registerUser = async (req, res) => {
 const userLogin = async(req, res) => {
     try {
         const result = await validateUserLoginInputs.validateAsync(req.body);
-        const { email } = result;
+        const { email, password } = result;
 
         const user = await User.findOne({email});
         
@@ -46,10 +46,9 @@ const userLogin = async(req, res) => {
             return res.status(400).send("user not found")
         }
 
-        res.status(200).send({
-            message: "login successful",
-            user
-        });
+        const accessToken = generateToken(email, password);
+
+        if(accessToken) return res.status(200).send({user, accessToken });
         
     }catch(err) {
        return res.status(400).send(err);
