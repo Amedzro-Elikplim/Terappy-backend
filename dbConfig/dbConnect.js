@@ -1,5 +1,10 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const config = require('config');
 
-mongoose.connect('mongodb://localhost:27017/assignment', {useNewUrlParser: true, useUnifiedTopology: true})
-        .then(console.log("database connected"))
-        .catch(error => console.error(error))
+mongoose
+  .connect(config.get('dbConfig.connect'), {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(console.log("connected to mongoDB successfully"))
+  .catch((error) => console.error(error));

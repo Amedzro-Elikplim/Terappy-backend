@@ -1,0 +1,8 @@
+{
+  "dbConfig": {
+    "connect": "mongodb://localhost:27017/terappy"
+  },
+  "jwtPrivateKey": {
+    "secret": "terappy-jwtKey"
+  }
+}
