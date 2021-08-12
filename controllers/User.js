@@ -2,7 +2,6 @@ const User = require("../models/User/User");
 const Review = require("../models/Review/UserReview");
 const { generateToken } = require("../auth/jwt");
 const _ = require("lodash");
-const mongoose = require('mongoose')
 
 
 const {
@@ -56,8 +55,7 @@ const UserReview = async (req, res) => {
   try {
     const validated = await validateReviewInputs.validateAsync(req.body);
     const { review } = validated;
-    const user = Buffer.from(req.user.id).toString('hex');
-
+    const user = Buffer.from(req.user.id).toString("hex");
 
     const result = await Review.create({ review, user });
     return res.status(200).send({ data: _.pick(result, ["review"]) });
@@ -67,8 +65,22 @@ const UserReview = async (req, res) => {
   }
 };
 
+const Me = async (req, res) => {
+  try {
+
+    const id = Buffer.from(req.user.id).toString("hex");
+    const user = await User.findById(id).select("-_id -password -__v");
+    if (!user) res.status(400).send("user not found");
+
+    return res.status(200).send(user);
+  } catch (error) {
+    return res.status(400).send(error);
+  }
+};
+
 module.exports = {
   Register,
   Login,
   UserReview,
+  Me,
 };

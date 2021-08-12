@@ -19,6 +19,34 @@ const registerSchema = new Schema({
     type: String,
     required: [true, "please provide your password"],
   },
+  gender: {
+    type: String,
+  },
+  dob: {
+    type: String,
+  },
+  country: {
+    type: String,
+  },
+  address: {
+    type: String,
+  },
+  profile_picture: {
+    type: String,
+  },
+  //professional background
+  area_of_specialty: {
+    type: String,
+  },
+  employment_status: {
+    type: String,
+  },
+  work_experience: {
+    type: String,
+  },
+  proof_of_profession: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
