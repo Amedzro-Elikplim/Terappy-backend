@@ -5,7 +5,6 @@ const validateRegistrationInputs = Joi.object({
   last_name: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().required(),
-  confirm_password: Joi.string().required(),
 });
 
 const validateUserLoginInputs = Joi.object({
@@ -14,6 +13,8 @@ const validateUserLoginInputs = Joi.object({
 });
 
 const validateTherapistRegistrationInputs = Joi.object({
+  first_name: Joi.string().required(),
+  last_name: Joi.string().required(),
   email: Joi.string().required(),
   password: Joi.string().required(),
 });
@@ -23,15 +24,20 @@ const validateReviewInputs = Joi.object({
 });
 
 const validateTherapistProfileInput = Joi.object({
-  first_name: Joi.string().required(),
-  last_name: Joi.string().required(),
   gender: Joi.string().required(),
-  dob: Joi.number().required(),
+  dob: Joi.string().required(),
   country: Joi.string().required(),
   address: Joi.string().required(),
   area_of_specialty: Joi.string().required(),
   employment_status: Joi.string().required(),
   work_experience: Joi.string().required(),
+  profile_picture: Joi.string().required(),
+  proof_of_profession: Joi.string().required(),
+});
+
+const validateAdminInput = Joi.object({
+  email: Joi.string().required(),
+  password: Joi.string().required(),
 });
 
 module.exports = {
@@ -40,4 +46,5 @@ module.exports = {
   validateTherapistRegistrationInputs,
   validateReviewInputs,
   validateTherapistProfileInput,
+  validateAdminInput,
 };

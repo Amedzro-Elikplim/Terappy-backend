@@ -4,20 +4,12 @@ const { model, Schema } = mongoose;
 
 const therapistProfileSchema = new Schema({
   //personal information
-  first_name: {
-    type: String,
-    required: [true, "provide your first name"],
-  },
-  last_name: {
-    type: String,
-    required: [true, "provide your last name"],
-  },
   gender: {
     type: String,
     required: [true, "provide your gender"],
   },
   dob: {
-    type: Date,
+    type: String,
     required: [true, "provide your date of birth"],
   },
   country: {
@@ -29,6 +21,7 @@ const therapistProfileSchema = new Schema({
     required: [true, "provide your address"],
   },
   profile_picture: {
+    type: String,
     required: [true, "please provide your profile picture"],
   },
   //professional background
@@ -45,8 +38,14 @@ const therapistProfileSchema = new Schema({
     required: [true, "provide your work experience"],
   },
   proof_of_profession: {
+    type: String,
     required: [true, "provide proof of profession"],
+  },
+  therapist: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Therapist",
+    required: [true, "ref required"],
   },
 });
 
-module.exports = model("Therapist Profile", therapistProfileSchema);
+module.exports = model("TherapistProfile", therapistProfileSchema);

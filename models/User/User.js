@@ -19,10 +19,6 @@ const userSchema = new Schema({
     type: String,
     required: [true, "provide your password"],
   },
-  confirm_password: {
-    type: String,
-    required: [true, "password must be the same"],
-  },
   createdAt: {
     type: Date,
     default: Date.now

@@ -1,6 +1,12 @@
 const Therapist = require("../models/Therapist/Register");
-const Review = require('../models/Review/TherapistReview');
-const { validateTherapistRegistrationInputs, validateReviewInputs } = require("../utils/validator");
+const Review = require("../models/Review/TherapistReview");
+const TherapistProfile = require("../models/Therapist/Profile");
+const {
+  validateTherapistRegistrationInputs,
+  validateReviewInputs,
+  validateTherapistProfileInput,
+  validateUserLoginInputs,
+} = require("../utils/validator");
 const { generateToken } = require("../auth/jwt");
 const _ = require("lodash");
 
@@ -8,13 +14,31 @@ const Register = async (req, res) => {
   try {
     const validatedInput =
       await validateTherapistRegistrationInputs.validateAsync(req.body);
-    const { email, password } = validatedInput;
+    const { email, password, first_name, last_name } = validatedInput;
 
     const isAvailable = await Therapist.findOne({ email });
     if (isAvailable) return res.status(401).send("email already exists");
 
-    const therapist = await Therapist.create({ email, password, });
-    return res.status(201).send({user: _.pick(therapist, ['email', 'createdAt'])});
+    const therapist = await Therapist.create({
+      email,
+      password,
+      first_name,
+      last_name,
+    });
+
+    const token = generateToken(therapist._id);
+
+    return res
+      .status(201)
+      .header("x-authorization-header", token)
+      .send({
+        user: _.pick(therapist, [
+          "email",
+          "first_name",
+          "last_name",
+          "createdAt",
+        ]),
+      });
   } catch (e) {
     console.log(e);
     return res.status(400).send(e);
@@ -23,47 +47,90 @@ const Register = async (req, res) => {
 
 const Login = async (req, res) => {
   try {
-    const validateInput = await validateTherapistRegistrationInputs.validateAsync(req.body);
+    const validateInput = await validateUserLoginInputs.validateAsync(req.body);
     const { email } = validateInput;
 
     const user = await Therapist.findOne({ email });
     if (!user) return res.status(400).send("user not found");
 
-    const token = generateToken(user);
-    if (token)
-      return res.status(200).send({ user: _.pick(user, ["email"]), token });
+    const token = generateToken(user._id);
+    return res
+      .status(200)
+      .header("x-authorization-header", token)
+      .send({ user: _.pick(user, ["email"]) });
   } catch (error) {
     res.status(400).send(error);
   }
 };
 
-
 const TherapistReview = async (req, res) => {
   try {
     const validated = await validateReviewInputs.validateAsync(req.body);
     const { review } = validated;
-    const therapist = req.params.id;
+    const therapist = Buffer.from(req.user.id).toString("hex");
 
     const result = await Review.create({ review, therapist });
-    return res.status(200).send({ data: _.pick(result, ['review'])});
-     
+    return res.status(200).send({ data: _.pick(result, ["review"]) });
   } catch (error) {
     return res.status(400).send(error);
   }
-}
+};
 
-const AllReviews = async (req, res) => {
+const Profile = async (req, res) => {
   try {
-    const reviews = await Review.find().populate('therapist');
-    return res.status(200).send(reviews);
+    const validated = await validateTherapistProfileInput.validateAsync(
+      req.body
+    );
+    const {
+      gender,
+      dob,
+      country,
+      address,
+      area_of_specialty,
+      employment_status,
+      work_experience,
+      profile_picture,
+      proof_of_profession,
+    } = validated;
+
+    const therapist = Buffer.from(req.user.id).toString("hex");
+
+    const data = {
+      gender,
+      dob,
+      country,
+      address,
+      area_of_specialty,
+      employment_status,
+      work_experience,
+      profile_picture,
+      proof_of_profession,
+      therapist,
+    };
+
+    const result = await TherapistProfile.create(data);
+    const response = _.pick(result, ["gender", "dob", "country"]);
+    return res.status(200).send({ response });
   } catch (error) {
-    return res.status(400).send(error)
+    return res.status(400).send(error);
   }
-}
+};
+
+const Me = async (req, res) => {
+  try {
+    // const id = Buffer.from(req.user.id).toString("hex");
+    // const user = await TherapistProfile.findById(id);
+
+    return res.status(200).send(user);
+  } catch (error) {
+    return res.status(400).send(error);
+  }
+};
 
 module.exports = {
   Register,
   Login,
   TherapistReview,
-  AllReviews
+  Profile,
+  Me,
 };

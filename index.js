@@ -5,14 +5,11 @@ const PORT =process.env.PORT || 5000;
 const route = require("./routes/routes");
 const config = require('config');
 
-
-
 require('./dbConfig/dbConnect')
 
 app.use(cors());
 app.use(express.json());
 app.use("/api", route);
-app.use("/admin/api", adminRoute)
 
 
 const secret = config.get('jwtPrivateKey.secret');
