@@ -1,5 +1,5 @@
-const User = require("../models/User/User");
-const Review = require("../models/Review/UserReview");
+const Client = require("../models/Client/Client");
+const Review = require("../models/Review/ClientReview");
 const { generateToken } = require("../auth/jwt");
 const _ = require("lodash");
 
@@ -15,10 +15,10 @@ const Register = async (req, res) => {
     const result = await validateRegistrationInputs.validateAsync(req.body);
     const { first_name, last_name, email, password } = result;
 
-    const userExist = await User.findOne({ email });
+    const userExist = await Client.findOne({ email });
     if (userExist) return res.status(405).send("user with email already exist");
 
-    const user = await User.create({ first_name, last_name, email, password });
+    const user = await Client.create({ first_name, last_name, email, password });
     const token = generateToken(user._id);
 
     return res
@@ -28,7 +28,6 @@ const Register = async (req, res) => {
         user: _.pick(user, ["first_name", "last_name", "email", "createdAt"]),
       });
   } catch (err) {
-    console.log(err);
     res.status(400).send(err);
   }
 };
@@ -38,7 +37,7 @@ const Login = async (req, res) => {
     const result = await validateUserLoginInputs.validateAsync(req.body);
     const { email } = result;
 
-    const user = await User.findOne({ email });
+    const user = await Client.findOne({ email });
     if (!user) return res.status(400).send("user not found");
 
     const token = generateToken(user._id);
@@ -51,7 +50,7 @@ const Login = async (req, res) => {
   }
 };
 
-const UserReview = async (req, res) => {
+const ClientReview = async (req, res) => {
   try {
     const validated = await validateReviewInputs.validateAsync(req.body);
     const { review } = validated;
@@ -69,11 +68,12 @@ const Me = async (req, res) => {
   try {
 
     const id = Buffer.from(req.user.id).toString("hex");
-    const user = await User.findById(id).select("-_id -password -__v");
+    const user = await Client.findById(id).select("-_id -password -__v");
     if (!user) res.status(400).send("user not found");
 
     return res.status(200).send(user);
   } catch (error) {
+    console.log(error);
     return res.status(400).send(error);
   }
 };
@@ -81,6 +81,6 @@ const Me = async (req, res) => {
 module.exports = {
   Register,
   Login,
-  UserReview,
+  ClientReview,
   Me,
 };

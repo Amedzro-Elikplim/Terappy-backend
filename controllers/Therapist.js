@@ -1,4 +1,4 @@
-const Therapist = require("../models/Therapist/Register");
+const Therapist = require("../models/Therapist/Therapist");
 const Review = require("../models/Review/TherapistReview");
 
 const {
@@ -10,8 +10,6 @@ const {
 
 const { generateToken } = require("../auth/jwt");
 const _ = require("lodash");
-
-
 
 const Register = async (req, res) => {
   try {
@@ -48,9 +46,6 @@ const Register = async (req, res) => {
   }
 };
 
-
-
-
 const Login = async (req, res) => {
   try {
     const validateInput = await validateUserLoginInputs.validateAsync(req.body);
@@ -69,10 +64,6 @@ const Login = async (req, res) => {
   }
 };
 
-
-
-
-
 const TherapistReview = async (req, res) => {
   try {
     const validated = await validateReviewInputs.validateAsync(req.body);
@@ -85,10 +76,6 @@ const TherapistReview = async (req, res) => {
     return res.status(400).send(error);
   }
 };
-
-
-
-
 
 const Profile = async (req, res) => {
   try {
@@ -122,7 +109,7 @@ const Profile = async (req, res) => {
     };
 
     const result = await Therapist.findByIdAndUpdate(id, data, { new: true });
-  
+
     const response = _.pick(result, [
       "gender",
       "dob",
@@ -139,10 +126,6 @@ const Profile = async (req, res) => {
   }
 };
 
-
-
-
-
 const Me = async (req, res) => {
   try {
     const id = Buffer.from(req.user.id).toString("hex");
@@ -152,9 +135,6 @@ const Me = async (req, res) => {
     return res.status(400).send(error);
   }
 };
-
-
-
 
 module.exports = {
   Register,

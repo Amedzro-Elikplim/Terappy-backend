@@ -15,6 +15,13 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-//write verify for admin
+const verifyAdminRole = (req, res, next) => {
+  const isAdmin = req.user.isAdmin;
+  if (!isAdmin) return res.status(403).send("not authorized");
+  next();
+};
 
-module.exports = verifyToken;
+module.exports = {
+  verifyToken,
+  verifyAdminRole
+};
